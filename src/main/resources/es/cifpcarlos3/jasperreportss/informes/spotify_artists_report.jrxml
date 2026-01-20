@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Report: Artistas por Género agrupado por Tipo de Medio y Álbum (Chinook SQLite) -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+    name="spotify_artists_report" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
+    uuid="c0d8e4c5-7a40-48b0-8b27-1a9d0c2c9c01" whenResourceMissingType="Empty">
+
+    <!-- Parameters -->
+    <parameter name="P_GENRE_NAME" class="java.lang.String"/>
+    <parameter name="REPORT_CREATOR" class="java.lang.String"/>
+    <parameter name="LOGO_PATH" class="java.lang.String"/>
+
+    <!-- Query: filter by P_GENRE_NAME if provided; ordered by MediaType then Album -->
+    <queryString language="SQL">
+        <![CDATA[
+            SELECT 
+                mt.Name AS MediaTypeName,
+                a.Title AS AlbumTitle,
+                ar.Name AS ArtistName,
+                t.Name AS TrackName,
+                t.Composer AS Composer,
+                t.Milliseconds AS Milliseconds,
+                t.Bytes AS Bytes,
+                t.UnitPrice AS UnitPrice,
+                g.Name AS GenreName
+            FROM tracks t
+            JOIN albums a ON t.AlbumId = a.AlbumId
+            JOIN artists ar ON a.ArtistId = ar.ArtistId
+            JOIN genres g ON t.GenreId = g.GenreId
+            JOIN media_types mt ON t.MediaTypeId = mt.MediaTypeId
+            WHERE ( $P{P_GENRE_NAME} IS NULL OR $P{P_GENRE_NAME} = '' OR g.Name = $P{P_GENRE_NAME} )
+            ORDER BY mt.Name, a.Title, t.Name
+        ]]>
+    </queryString>
+
+    <!-- Fields from query -->
+    <field name="MediaTypeName" class="java.lang.String"/>
+    <field name="AlbumTitle" class="java.lang.String"/>
+    <field name="ArtistName" class="java.lang.String"/>
+    <field name="TrackName" class="java.lang.String"/>
+    <field name="Composer" class="java.lang.String"/>
+    <field name="Milliseconds" class="java.lang.Integer"/>
+    <field name="Bytes" class="java.lang.Integer"/>
+    <field name="UnitPrice" class="java.math.BigDecimal"/>
+    <field name="GenreName" class="java.lang.String"/>
+
+    <!-- Groups must be declared before columnHeader/detail bands -->
+    <group name="MediaTypeGroup">
+        <groupExpression><![CDATA[$F{MediaTypeName}]]></groupExpression>
+        <groupHeader>
+            <band height="20">
+                <textField>
+                    <reportElement x="0" y="0" width="515" height="20"/>
+                    <textElement>
+                        <font size="13" isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Tipo de Medio: " + $F{MediaTypeName}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+    </group>
+
+    <group name="AlbumGroup">
+        <groupExpression><![CDATA[$F{AlbumTitle}]]></groupExpression>
+        <groupHeader>
+            <band height="20">
+                <textField>
+                    <reportElement x="0" y="0" width="515" height="20"/>
+                    <textElement>
+                        <font size="12" isBold="true"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Álbum: " + $F{AlbumTitle} + "  |  Artista: " + $F{ArtistName}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+    </group>
+
+    <!-- Title band with logo, brand and genre -->
+    <title>
+        <band height="90">
+            <image scaleImage="RetainShape" onErrorType="Blank">
+                <reportElement x="0" y="0" width="60" height="60"/>
+                <imageExpression class="java.lang.String"><![CDATA[$P{LOGO_PATH}]]></imageExpression>
+            </image>
+            <textField>
+                <reportElement x="70" y="0" width="445" height="30"/>
+                <textElement>
+                    <font size="18" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["SPOTIFY - Informe de Artistas por Género y Tipo de Medio"]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="62" width="515" height="20"/>
+                <textElement>
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Género: " + ( $P{P_GENRE_NAME} == null || $P{P_GENRE_NAME}.trim().isEmpty() ? "Todos" : $P{P_GENRE_NAME} )]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- Page header shows creator -->
+    <pageHeader>
+        <band height="18">
+            <textField>
+                <reportElement x="0" y="0" width="515" height="18"/>
+                <textElement>
+                    <font size="12"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{REPORT_CREATOR} == null ? "" : $P{REPORT_CREATOR}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageHeader>
+
+    <!-- Column header for track listing -->
+    <columnHeader>
+        <band height="18">
+            <staticText>
+                <reportElement x="0" y="0" width="140" height="18"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Track]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="140" y="0" width="120" height="18"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Compositor]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="260" y="0" width="70" height="18"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[ms]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="330" y="0" width="85" height="18"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[bytes]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="415" y="0" width="100" height="18"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[precio]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detail: track rows -->
+    <detail>
+        <band height="18">
+            <textField>
+                <reportElement x="0" y="0" width="140" height="18"/>
+                <textFieldExpression><![CDATA[$F{TrackName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="140" y="0" width="120" height="18"/>
+                <textFieldExpression><![CDATA[$F{Composer}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#">
+                <reportElement x="260" y="0" width="70" height="18"/>
+                <textFieldExpression><![CDATA[$F{Milliseconds}]]></textFieldExpression>
+            </textField>
+            <textField pattern="#">
+                <reportElement x="330" y="0" width="85" height="18"/>
+                <textFieldExpression><![CDATA[$F{Bytes}]]></textFieldExpression>
+            </textField>
+            <textField pattern=",##0.00">
+                <reportElement x="415" y="0" width="100" height="18"/>
+                <textFieldExpression><![CDATA[$F{UnitPrice}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <!-- Footer -->
+    <pageFooter>
+        <band height="16">
+            <textField>
+                <reportElement x="440" y="0" width="75" height="16"/>
+                <textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+</jasperReport>
