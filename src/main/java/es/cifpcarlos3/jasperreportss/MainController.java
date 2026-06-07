@@ -53,8 +53,6 @@ public class MainController {
         params.put("P_GENRE_NAME", genre);
         params.put("REPORT_CREATOR", "Creador: " + System.getProperty("user.name", "Desconocido"));
 
-        URL logoUrl = getClass().getResource("/RecursoImagen/wavey_ribbon_2.png");
-
         try (Connection con = Database.getConnection()) {
             if (con == null) {
                 showError("No hay conexión con la base de datos.");

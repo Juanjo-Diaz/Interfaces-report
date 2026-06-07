@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Report: Artistas por Género agrupado por Tipo de Medio y Álbum (Chinook SQLite) -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
     name="spotify_artists_report" pageWidth="595" pageHeight="842" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="40" bottomMargin="40"
     uuid="c0d8e4c5-7a40-48b0-8b27-1a9d0c2c9c01" whenResourceMissingType="Empty">
 
-    <!-- Parameters -->
     <parameter name="P_GENRE_NAME" class="java.lang.String"/>
     <parameter name="REPORT_CREATOR" class="java.lang.String"/>
-    <parameter name="LOGO_PATH" class="java.lang.String"/>
 
-    <!-- Query: filter by P_GENRE_NAME if provided; ordered by MediaType then Album -->
     <queryString language="SQL">
         <![CDATA[
             SELECT 
@@ -33,7 +29,6 @@
         ]]>
     </queryString>
 
-    <!-- Fields from query -->
     <field name="MediaTypeName" class="java.lang.String"/>
     <field name="AlbumTitle" class="java.lang.String"/>
     <field name="ArtistName" class="java.lang.String"/>
@@ -75,12 +70,11 @@
         </groupHeader>
     </group>
 
-    <!-- Title band with logo, brand and genre -->
     <title>
         <band height="90">
             <image scaleImage="RetainShape" onErrorType="Blank">
                 <reportElement x="0" y="0" width="60" height="60"/>
-                <imageExpression class="java.lang.String"><![CDATA[$P{LOGO_PATH}]]></imageExpression>
+                <imageExpression><![CDATA["RecursoImagen/wavey_ribbon_2.jpg"]]></imageExpression>
             </image>
             <textField>
                 <reportElement x="70" y="0" width="445" height="30"/>
@@ -99,7 +93,6 @@
         </band>
     </title>
 
-    <!-- Page header shows creator -->
     <pageHeader>
         <band height="18">
             <textField>
@@ -112,7 +105,6 @@
         </band>
     </pageHeader>
 
-    <!-- Column header for track listing -->
     <columnHeader>
         <band height="18">
             <staticText>
@@ -153,7 +145,6 @@
         </band>
     </columnHeader>
 
-    <!-- Detail: track rows -->
     <detail>
         <band height="18">
             <textField>
@@ -179,7 +170,6 @@
         </band>
     </detail>
 
-    <!-- Footer -->
     <pageFooter>
         <band height="16">
             <textField>
